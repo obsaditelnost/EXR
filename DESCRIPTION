@@ -37,5 +37,8 @@ Imports:
 Suggests: 
     testthat (>= 3.0.0),
     lintr,
-    covr
+    covr,
+    ecb,
+    ISOcodes,
+    withr
 Config/testthat/edition: 3

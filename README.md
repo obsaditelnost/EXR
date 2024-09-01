@@ -5,9 +5,14 @@
 
 <!-- badges: start -->
 
+[![Project Status: WIP - Initial development is in progress, but there
+has not yet been a stable, usable release suitable for the
+public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
 [![R-CMD-check](https://github.com/obsaditelnost/EXR/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/obsaditelnost/EXR/actions/workflows/R-CMD-check.yaml)
 [![Codecov test
 coverage](https://codecov.io/gh/obsaditelnost/EXR/graph/badge.svg)](https://app.codecov.io/gh/obsaditelnost/EXR)
+[![License:
+MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://cran.r-project.org/web/licenses/MIT)
 <!-- badges: end -->
 
 Get currency exchange rates (‘EXR’) or directly apply currency

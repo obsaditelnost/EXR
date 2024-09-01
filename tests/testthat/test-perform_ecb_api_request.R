@@ -1,5 +1,4 @@
 test_that("perform_ecb_api_request works", {
-  val_before <- getOption("EXR.http.timeout")
 
   # malformed string
   expect_error(EXR::perform_ecb_api_request(""))
@@ -10,14 +9,15 @@ test_that("perform_ecb_api_request works", {
   expect_error(EXR::perform_ecb_api_request("D..EUR.SP00.A?format=csvdata&startPeriod=2000-01-01&detail=dataonly", timeout = 1))
 
   # too long (by using option)
-  options("EXR.http.timeout" = 1)
-  expect_error(EXR::perform_ecb_api_request("D..EUR.SP00.A?format=csvdata&startPeriod=2000-01-01&detail=dataonly"))
+
+  withr::with_options(list(EXR.http.timeout = 1),
+    expect_error(EXR::perform_ecb_api_request("D..EUR.SP00.A?format=csvdata&startPeriod=2000-01-01&detail=dataonly"))
+  )
 
   # too long
-  options("EXR.http.timeout" = 30)
-  expect_error(EXR::perform_ecb_api_request("D..EUR.SP00.A?format=csvdata&startPeriod=2000-01-01&detail=dataonly", timeout = 1))
-
-  options("EXR.http.timeout" = NULL)
+  withr::with_options(list(EXR.http.timeout = 30),
+    expect_error(EXR::perform_ecb_api_request("D..EUR.SP00.A?format=csvdata&startPeriod=2000-01-01&detail=dataonly", timeout = 1))
+  )
 
   expect_no_error(EXR::perform_ecb_api_request("A.USD.EUR.SP00.A?format=csvdata&startPeriod=2018&detail=dataonly"))
   expect_no_error(EXR::perform_ecb_api_request("A.USD.EUR.SP00.A?format=jsondata&startPeriod=2018&detail=dataonly"))
@@ -43,5 +43,4 @@ test_that("perform_ecb_api_request works", {
   # error if request is malformed and API detects it
   expect_error(EXR::perform_ecb_api_request("D.EUR.EUR.SP00.A?format=csvdata&startPeriod=2024-08-03&endPeriod=2024-08-03&detail=dataonly"))
 
-  options("EXR.http.timeout" = val_before)
 })
