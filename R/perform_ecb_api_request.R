@@ -49,7 +49,7 @@ perform_ecb_api_request <- function(query) {
 
   url <- paste(entry_point, "service", "data", flow_ref, query, sep = "/")
   result <- httr2::request(url) |>
-    httr2::req_timeout(as.integer(getOption("EXR.http.timeout", default = 30))) |>
+    httr2::req_timeout(as.numeric(getOption("EXR.http.timeout", default = 30))) |>
     httr2::req_perform()
 
   if (httr2::resp_has_body(result)) {

@@ -6,7 +6,7 @@ test_that("perform_ecb_api_request works", {
   expect_error(EXR::perform_ecb_api_request("fjrejghroe"))
 
   # too long (by using option)
-  withr::with_options(list(EXR.http.timeout = 1),
+  withr::with_options(list(EXR.http.timeout = 0.1),
     expect_error(EXR::perform_ecb_api_request("D..EUR.SP00.A?format=csvdata&startPeriod=2000-01-01&detail=dataonly"))
   )
 
