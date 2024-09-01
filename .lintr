@@ -1,0 +1,12 @@
+linters: linters_with_defaults(
+    line_length_linter(200),
+    # weird behaviour wrt tidy eval, doesn't look at utils::globalVariables
+    object_usage_linter = NULL
+  )
+exclusions: list(
+    "R/get_exchange_rate_history.R" = list(
+      # too many checks - logic after checks in line 450 is ok
+      cyclocomp_linter = 1:450
+    )
+  )
+encoding: "UTF-8"

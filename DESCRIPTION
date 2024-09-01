@@ -1,0 +1,41 @@
+Package: EXR
+Type: Package
+Title: Download Free Currency Data / Exchange Rates and Apply Currency Conversions
+Version: 0.1.0
+Authors@R: 
+  c(person(given = "Mirko",
+           family = "Schinck",
+           role = c("aut", "cre"),
+           email = "github_obsaditelnost@dermirko.de"))
+Author: Mirko Schinck [aut, cre]
+Maintainer: Mirko Schinck <github_obsaditelnost@dermirko.de>    
+Description: Get currency exchange rates ('EXR') or directly apply currency 
+    conversion on a tibble from one to another currency based on spot prices 
+    (avg) provided by 'ECB Data Portal'. If neither currency nor currency 
+    denominator is EUR, unofficial cross-rates based on EUR will be calculated. 
+    The main purpose of this package is to offer an unlimited and free way to
+    get (potentially approximate) important exchange rates. No API-key required. 
+    Data can be requested by periods with days as shortest period. No ask, bid,
+    mid or intra-day data.
+URL: https://github.com/obsaditelnost/EXR/
+BugReports: https://github.com/obsaditelnost/EXR/issues
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.3.2
+Roxygen: list(markdown = TRUE)
+Depends:
+    R (>= 4.0.0)
+Imports: 
+    httr2 (>= 1.0.1),
+    readr (>= 2.1.2),
+    tidyr (>= 1.3.0),
+    cli (>= 3.4.1),
+    zoo (>= 1.7-13),
+    dplyr (>= 1.1.1),
+    vctrs (>= 0.4.0)
+Suggests: 
+    testthat (>= 3.0.0),
+    lintr,
+    covr
+Config/testthat/edition: 3
