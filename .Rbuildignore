@@ -2,3 +2,5 @@
 ^\.Rproj\.user$
 ^LICENSE\.md$
 ^\.lintr$
+^\.github$
+^README\.Rmd$
