@@ -4,7 +4,7 @@
 \alias{perform_ecb_api_request}
 \title{performs a GET-request against the ECB Data API}
 \usage{
-perform_ecb_api_request(query, timeout = NULL)
+perform_ecb_api_request(query)
 }
 \arguments{
 \item{query}{\emph{the EXR request with both key and parameters}
@@ -23,17 +23,6 @@ Example requests might be:
 \item \code{A.USD.EUR.SP00.A?format=csvdata&startPeriod=2018&detail=dataonly}
 \item \code{D.USD.EUR.SP00.A}
 }}
-
-\item{timeout}{\emph{https request timeout in seconds}
-
-\verb{scalar<numeric>} // \emph{default:} NULL (\code{optional})
-
-The free API is not very fast, if you query large amounts of data, you might have
-to increase the number. The actual amount of data is not limited but timeout is set to
-\code{getOption("EXR.http.timeout", default = 30)} by this package. Therefore
-you may set \code{options("EXR.http.timeout" = x)} to override the default value.
-
-Parameter \code{timeout} has highest priority though and overrides global options}
 }
 \value{
 \verb{scalar<character>}, the return value of \code{\link[httr2:resp_body_raw]{httr2::resp_body_string()}}. If body
@@ -44,13 +33,17 @@ the functionality is constrained to EXR-data. It's primarily intended for
 internal use. For access to the whole API with all ECB data but without any
 further functionality have a look at the package \link[ecb:get_data]{ecb::get_data}.
 }
+\details{
+The free API is not very fast, if you query large amounts of data, you might have
+to increase the number. The actual amount of data is not limited but timeout is set to
+\code{getOption("EXR.http.timeout", default = 30)} by this package. Therefore
+you may set \code{options("EXR.http.timeout" = x)} to override the default value.
+}
 \examples{
 
 # get annual average USD/EUR exchange rates in CSV-format, starting from 2018
 EXR::perform_ecb_api_request("A.USD.EUR.SP00.A?format=csvdata&startPeriod=2018&detail=dataonly")
 
-# same request but constrained to 1 second
-EXR::perform_ecb_api_request("A.USD.EUR.SP00.A?format=csvdata&startPeriod=2018&detail=dataonly", 1)
 }
 \references{
 \href{https://data.ecb.europa.eu/help/api/data}{https://data.ecb.europa.eu/help/api/data}

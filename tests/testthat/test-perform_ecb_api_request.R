@@ -5,18 +5,9 @@ test_that("perform_ecb_api_request works", {
   expect_error(EXR::perform_ecb_api_request(NULL))
   expect_error(EXR::perform_ecb_api_request("fjrejghroe"))
 
-  # too long
-  expect_error(EXR::perform_ecb_api_request("D..EUR.SP00.A?format=csvdata&startPeriod=2000-01-01&detail=dataonly", timeout = 1))
-
   # too long (by using option)
-
   withr::with_options(list(EXR.http.timeout = 1),
     expect_error(EXR::perform_ecb_api_request("D..EUR.SP00.A?format=csvdata&startPeriod=2000-01-01&detail=dataonly"))
-  )
-
-  # too long
-  withr::with_options(list(EXR.http.timeout = 30),
-    expect_error(EXR::perform_ecb_api_request("D..EUR.SP00.A?format=csvdata&startPeriod=2000-01-01&detail=dataonly", timeout = 1))
   )
 
   expect_no_error(EXR::perform_ecb_api_request("A.USD.EUR.SP00.A?format=csvdata&startPeriod=2018&detail=dataonly"))

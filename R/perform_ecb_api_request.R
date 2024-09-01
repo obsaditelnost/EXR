@@ -22,16 +22,11 @@
 #'      \item \code{D.USD.EUR.SP00.A}
 #'    }
 #'
-#' @param timeout *https request timeout in seconds*
-#'
-#'   `scalar<numeric>` // *default:* NULL (`optional`)
-#'
+#' @details
 #'   The free API is not very fast, if you query large amounts of data, you might have
 #'   to increase the number. The actual amount of data is not limited but timeout is set to
 #'   \code{getOption("EXR.http.timeout", default = 30)} by this package. Therefore
 #'   you may set \code{options("EXR.http.timeout" = x)} to override the default value.
-#'
-#'   Parameter `timeout` has highest priority though and overrides global options
 #'
 #' @return `scalar<character>`, the return value of [httr2::resp_body_string()]. If body
 #'    is empty, NULL will be returned.
@@ -44,13 +39,9 @@
 #' # get annual average USD/EUR exchange rates in CSV-format, starting from 2018
 #' EXR::perform_ecb_api_request("A.USD.EUR.SP00.A?format=csvdata&startPeriod=2018&detail=dataonly")
 #'
-#' # same request but constrained to 1 second
-#' EXR::perform_ecb_api_request("A.USD.EUR.SP00.A?format=csvdata&startPeriod=2018&detail=dataonly", 1)
-perform_ecb_api_request <- function(query, timeout = NULL) {
+perform_ecb_api_request <- function(query) {
 
   stopifnot("Please provide a properly formatted query!" = grepl("^[A-Z]\\..+[?].*$", query) && !is.null(query))
-
-  timeout <- dplyr::coalesce(timeout, as.integer(getOption("EXR.http.timeout", default = 30)))
 
   entry_point <- "https://data-api.ecb.europa.eu"
   resource <- "data"
@@ -58,7 +49,7 @@ perform_ecb_api_request <- function(query, timeout = NULL) {
 
   url <- paste(entry_point, "service", "data", flow_ref, query, sep = "/")
   result <- httr2::request(url) |>
-    httr2::req_timeout(timeout) |>
+    httr2::req_timeout(as.integer(getOption("EXR.http.timeout", default = 30))) |>
     httr2::req_perform()
 
   if (httr2::resp_has_body(result)) {
