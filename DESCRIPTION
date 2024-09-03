@@ -11,16 +11,16 @@ Author: Mirko Schinck [aut, cre]
 Maintainer: Mirko Schinck <github_obsaditelnost@dermirko.de>    
 Description: Get currency exchange rates ('EXR') or directly apply currency 
     conversion on a tibble from one to another currency based on spot prices 
-    (avg) provided by 'ECB Data Portal'. If neither currency nor currency 
-    denominator is EUR, unofficial cross-rates based on EUR will be calculated. 
-    The main purpose of this package is to offer an unlimited and free way to
-    get (potentially approximate) important exchange rates. No API-key required. 
-    Data can be requested by periods with days as shortest period. No ask, bid,
-    mid or intra-day data.
+    (reference rates) provided by 'ECB Data Portal'. The main purpose of this 
+    package is to offer an unlimited and free way to get (potentially approximate) 
+    important exchange rates. No API-key required. Data can be requested by periods 
+    with days as shortest period. No ask, bid, mid or intra-day data. Unofficial 
+    cross-rates based on EUR may be calculated.
 URL: https://github.com/obsaditelnost/EXR/
 BugReports: https://github.com/obsaditelnost/EXR/issues
 License: MIT + file LICENSE
 Encoding: UTF-8
+Language: en-GB
 LazyData: true
 RoxygenNote: 7.3.2
 Roxygen: list(markdown = TRUE)
@@ -40,5 +40,6 @@ Suggests:
     covr,
     ecb,
     ISOcodes,
-    withr
+    withr,
+    gt
 Config/testthat/edition: 3

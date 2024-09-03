@@ -43,6 +43,15 @@ EXR::get_available_currencies(as.Date("2024-01-02"), use_most_recent = FALSE)
 EXR::get_available_currencies(Sys.Date())
 
 # get a vector of available ISO codes
-as.vector(get_available_currencies()$ISOCODE)
+as.vector(EXR::get_available_currencies()$ISOCODE)
+
+# show only the changes in available currencies between 2014 and 2024
+library(dplyr)
+dplyr::full_join(
+  EXR::get_available_currencies(as.Date("2014-01-02")),
+  EXR::get_available_currencies(as.Date("2024-01-02")),
+  suffix = c("_2014", "_2024"),
+  keep = TRUE
+) \%>\% .[!stats::complete.cases(.), ]
 
 }

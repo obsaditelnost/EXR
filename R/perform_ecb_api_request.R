@@ -10,7 +10,7 @@
 #'   `scalar<character>` // **required**
 #'
 #'   A query compliant to the \href{https://data.ecb.europa.eu/help/api/data}{official documentation}.
-#'   A genereic form of the whole API-request is
+#'   A generic form of the whole API-request is
 #'    \itemize{
 #'      \item \code{protocol://wsEntryPoint/resource/flowRef/key?parameters}
 #'    }
@@ -28,7 +28,7 @@
 #'   \code{getOption("EXR.http.timeout", default = 30)} by this package. Therefore
 #'   you may set \code{options("EXR.http.timeout" = x)} to override the default value.
 #'
-#' @return `scalar<character>`, the return value of [httr2::resp_body_string()]. If body
+#' @returns `scalar<character>`, the return value of [httr2::resp_body_string()]. If body
 #'    is empty, NULL will be returned.
 #' @export
 #'
@@ -36,12 +36,16 @@
 #'
 #' @examples
 #'
-#' # get annual average USD/EUR exchange rates in CSV-format, starting from 2018
+#' # get annual average USD/EUR exchange rates in CSV-format as string, starting from 2018
 #' EXR::perform_ecb_api_request("A.USD.EUR.SP00.A?format=csvdata&startPeriod=2018&detail=dataonly")
 #'
+#' # get annual average USD/EUR exchange rates as table, starting from 2018, all columns
+#' EXR::perform_ecb_api_request("A.USD.EUR.SP00.A?format=csvdata&startPeriod=2018") |>
+#'   readr::read_csv(show_col_types = FALSE)
+#'
 perform_ecb_api_request <- function(query) {
-
-  stopifnot("Please provide a properly formatted query!" = grepl("^[A-Z]\\..+[?].*$", query) && !is.null(query))
+  if (length(query) > 1 || is.null(query)) cli::cli_abort(c("x" = "{.field query} must be scalar and not NULL!"))
+  if (!grepl("^[A-Z]\\..+[?].*$", query)) cli::cli_abort(c("x" = "Please provide a properly formatted {.field query}!"))
 
   entry_point <- "https://data-api.ecb.europa.eu"
   resource <- "data"

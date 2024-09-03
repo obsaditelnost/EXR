@@ -12,7 +12,7 @@ perform_ecb_api_request(query)
 \verb{scalar<character>} // \strong{required}
 
 A query compliant to the \href{https://data.ecb.europa.eu/help/api/data}{official documentation}.
-A genereic form of the whole API-request is
+A generic form of the whole API-request is
 \itemize{
 \item \code{protocol://wsEntryPoint/resource/flowRef/key?parameters}
 }
@@ -41,8 +41,12 @@ you may set \code{options("EXR.http.timeout" = x)} to override the default value
 }
 \examples{
 
-# get annual average USD/EUR exchange rates in CSV-format, starting from 2018
+# get annual average USD/EUR exchange rates in CSV-format as string, starting from 2018
 EXR::perform_ecb_api_request("A.USD.EUR.SP00.A?format=csvdata&startPeriod=2018&detail=dataonly")
+
+# get annual average USD/EUR exchange rates as table, starting from 2018, all columns
+EXR::perform_ecb_api_request("A.USD.EUR.SP00.A?format=csvdata&startPeriod=2018") |>
+  readr::read_csv(show_col_types = FALSE)
 
 }
 \references{

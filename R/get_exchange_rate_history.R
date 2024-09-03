@@ -131,7 +131,7 @@
 #'
 #'  Set filter to NULL for no filters at all
 #'
-#' @return a `tibble` with the following columns
+#' @returns a `tibble` with the following columns
 #'    \itemize{
 #'      \item **base_currency** `<character>`⁠ (\href{https://www.iso.org/iso-4217-currency-codes.html}{ISO 4217}) 3-Letter currency code
 #'      \item **price_currency** `<character>`⁠ (\href{https://www.iso.org/iso-4217-currency-codes.html}{ISO 4217}) 3-Letter currency code
@@ -222,16 +222,19 @@ get_exchange_rate_history <- function(base_currency, price_currency, periodicity
   # ====================================
 
   # base_currency
-  stopifnot(
-    "All elements of 'base_currency' must be an ISO4217 three-letter code." =
-      all(grepl("^[A-Z]{3}$", base_currency)) && is.character(base_currency) && length(base_currency) > 0
-  )
+
+  if (!(all(grepl("^[A-Z]{3}$", base_currency)) && is.character(base_currency) && length(base_currency) > 0)) {
+    cli::cli_abort(c("All elements of 'base_currency' must be an ISO4217 three-letter code.",
+      "x" = "Check {?this/these} code{?s}: {dplyr::coalesce(base_currency,\"NULL\")[!grepl(\"^[A-Z]{3}$\", dplyr::coalesce(base_currency,\"NULL\"))]}"
+    ))
+  }
 
   # price_currency
-  stopifnot(
-    "All elements of 'price_currency' must be an ISO4217 three-letter code." =
-      all(grepl("^[A-Z]{3}$", price_currency)) && is.character(price_currency) && length(price_currency) > 0
-  )
+  if (!(all(grepl("^[A-Z]{3}$", price_currency)) && is.character(price_currency) && length(price_currency) > 0)) {
+    cli::cli_abort(c("All elements of 'price_currency' must be an ISO4217 three-letter code.",
+      "x" = "Check {?this/these} code{?s}: {dplyr::coalesce(price_currency,\"NULL\")[!grepl(\"^[A-Z]{3}$\", dplyr::coalesce(price_currency,\"NULL\"))]}"
+    ))
+  }
 
   # periodicity
   if (!is.atomic(periodicity) || !(periodicity %in% c("A", "D", "H", "M", "Q"))) {
@@ -328,8 +331,8 @@ get_exchange_rate_history <- function(base_currency, price_currency, periodicity
       ))
     }
 
-    if (!is.null(filter$startPeriod) && !is.null(filter$endPeriod)) {
-      stopifnot("'filter$startPeriod' must not be after 'filter$endPeriod'" = filter$startPeriod <= filter$endPeriod)
+    if (!is.null(filter$startPeriod) && !is.null(filter$endPeriod) && filter$startPeriod > filter$endPeriod) {
+      cli::cli_abort(c("!" = "{.field filter$startPeriod} ({filter$startPeriod}) must not be after {.field filter$endPeriod} ({filter$endPeriod})"))
     }
 
     # filter$firstNObservations
@@ -374,10 +377,9 @@ get_exchange_rate_history <- function(base_currency, price_currency, periodicity
     }
 
     # param combinations
-    stopifnot(
-      "You must not use both 'filter$firstNObservations' and 'filter$lastNObservations'" =
-        is.null(filter$firstNObservations) || is.null(filter$lastNObservations)
-    )
+    if (!(is.null(filter$firstNObservations) || is.null(filter$lastNObservations))) {
+      cli::cli_abort(c("!" = "You must not use both {.field filter$firstNObservations} and {.field filter$lastNObservations}."))
+    }
 
     if (periodicity == "D" && fill_missing_dates) {
       if (!is.numeric(max_lookback_days) || length(max_lookback_days) != 1 ||
@@ -463,7 +465,8 @@ get_exchange_rate_history <- function(base_currency, price_currency, periodicity
   if (!is.null(result)) {
     result <- result |>
       readr::read_csv(show_col_types = FALSE, )
-    stopifnot("ECB Data API response is not a valid CSV file. Something must have gone wrong." = is.data.frame(result))
+
+    assert_is_df(result)
 
     result <- result |>
       dplyr::mutate(EXR_TYPE = NULL, raw = TRUE) |>
@@ -612,18 +615,28 @@ get_exchange_rate_history <- function(base_currency, price_currency, periodicity
 #' @param start_date first day, might be NULL
 #' @param end_date last date, might be NULL
 #'
-#' @return same tibble structure
+#' @returns same tibble structure
 #' @keywords internal
 #' @noRd
 #'
-#' @examples fill_gaps(data, 1)
+#' @examples
+#' library(dplyr)
+#' fill_gaps(dplyr::tribble(
+#'   ~KEY, ~FREQ, ~CURRENCY, ~CURRENCY_DENOM, ~EXR_SUFFIX, ~TIME_PERIOD, ~OBS_VALUE, ~raw,
+#'   "DUSDEURX", "D", "USD", "EUR", "X", "2024-01-01", 1L, TRUE,
+#'   "DUSDEURX", "D", "USD", "EUR", "X", "2024-01-03", 3L, TRUE
+#' ), 1)
 fill_gaps <- function(data, max_lookback_days, start_date = NULL, end_date = NULL) {
+  # just to be sure
+  if (!is.null(start_date)) start_date <- as.Date(start_date)
+  if (!is.null(end_date)) end_date <- as.Date(end_date)
+
   data %>%
     dplyr::mutate(TIME_PERIOD = as.Date(TIME_PERIOD)) %>%
     dplyr::group_by(KEY, FREQ, CURRENCY, CURRENCY_DENOM, EXR_SUFFIX) %>%
     # if start_date or end_date is NULL then just use the first or last existing date
-    tidyr::complete(TIME_PERIOD = seq.Date(dplyr::coalesce(start_date, min(TIME_PERIOD)),
-      dplyr::coalesce(end_date, max(TIME_PERIOD)),
+    tidyr::complete(TIME_PERIOD = seq.Date(as.Date(dplyr::coalesce(start_date, min(TIME_PERIOD))),
+      as.Date(dplyr::coalesce(end_date, max(TIME_PERIOD))),
       by = "day"
     )) %>%
     dplyr::arrange(TIME_PERIOD, .by_group = TRUE) %>%
@@ -637,5 +650,6 @@ fill_gaps <- function(data, max_lookback_days, start_date = NULL, end_date = NUL
     } %>%
     dplyr::ungroup() %>%
     dplyr::filter(TIME_PERIOD >= dplyr::coalesce(start_date, TIME_PERIOD) & TIME_PERIOD <= dplyr::coalesce(end_date, TIME_PERIOD)) %>%
-    dplyr::mutate(raw = tidyr::replace_na(raw, FALSE))
+    dplyr::mutate(raw = tidyr::replace_na(raw, FALSE)) %>%
+    dplyr::select(KEY, FREQ, CURRENCY, CURRENCY_DENOM, EXR_SUFFIX, TIME_PERIOD, OBS_VALUE, raw)
 }

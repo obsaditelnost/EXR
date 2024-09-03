@@ -54,4 +54,3 @@ EXR::sdmx_character_to_date("2023")
 \seealso{
 \code{\link[=sdmx_date_to_character]{sdmx_date_to_character()}}
 }
-\keyword{internal}

@@ -23,7 +23,7 @@
 #'   `date` might be a Saturday, Sunday or the current day before EXR publication. If `use_most_recent`
 #'   is `TRUE`, the API will be asked for the most recent date before the given date
 #'
-#' @return a `tibble` with columns 'ISOCODE' and 'TITLE'
+#' @returns a `tibble` with columns 'ISOCODE' and 'TITLE'
 #'
 #' @export
 #'
@@ -37,14 +37,31 @@
 #' EXR::get_available_currencies(Sys.Date())
 #'
 #' # get a vector of available ISO codes
-#' as.vector(get_available_currencies()$ISOCODE)
+#' as.vector(EXR::get_available_currencies()$ISOCODE)
+#'
+#' # show only the changes in available currencies between 2014 and 2024
+#' library(dplyr)
+#' dplyr::full_join(
+#'   EXR::get_available_currencies(as.Date("2014-01-02")),
+#'   EXR::get_available_currencies(as.Date("2024-01-02")),
+#'   suffix = c("_2014", "_2024"),
+#'   keep = TRUE
+#' ) %>% .[!stats::complete.cases(.), ]
 #'
 get_available_currencies <- function(date = Sys.Date() - 1, use_most_recent = TRUE) {
   # check for correct inputs
-  stopifnot("'date' must be of date datatype, see as.Date()" = inherits(date, what = "Date"))
-  stopifnot("'date' must be scalar, not a vector" = length(date) == 1)
-  stopifnot("'date' must not be in the future" = date <= Sys.Date())
-  stopifnot("'use_most_recent' must be TRUE or FALSE" = use_most_recent == TRUE || use_most_recent == FALSE)
+
+
+  if (!inherits(date, what = "Date")) {
+    cli::cli_abort(c("x" = "{.field date} must be of date datatype, see as.Date(), it is {.cls class(date)} though!"))
+  }
+
+  if (!(length(date) == 1)) cli::cli_abort(c("x" = "{.field date} must be scalar, not a vector!"))
+  if (!(date <= Sys.Date())) cli::cli_abort(c("x" = "{.field date}  must not be in the future!"))
+
+  if (!(use_most_recent == TRUE || use_most_recent == FALSE)) {
+    cli::cli_abort(c("x" = "{.field use_most_recent} must be TRUE or FALSE, it is {.strong use_most_recent} though!"))
+  }
 
   # max 7 days
   date_start <- format(date - use_most_recent * 7, "%Y-%m-%d")
@@ -60,7 +77,8 @@ get_available_currencies <- function(date = Sys.Date() - 1, use_most_recent = TR
   } else {
     result <- result |>
       readr::read_csv(show_col_types = FALSE)
-    stopifnot("ECB Data API response is not a valid CSV file. Something must have gone wrong." = is.data.frame(result))
+
+    assert_is_df(result)
 
     tibble(
       ISOCODE = result$CURRENCY,

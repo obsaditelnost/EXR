@@ -71,4 +71,3 @@ EXR::sdmx_date_to_character(
 \seealso{
 \code{\link[=sdmx_character_to_date]{sdmx_character_to_date()}}
 }
-\keyword{internal}

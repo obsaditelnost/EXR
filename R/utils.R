@@ -27,7 +27,7 @@
 #'
 #' @note intended for internal use
 #'
-#' @return `scalar<character>` or `vector<character>`, depending on the input.
+#' @returns `scalar<character>` or `vector<character>`, depending on the input.
 #'     Vector is compliant to sdmx notation (Statistical Data and Metadata eXchange)
 #'
 #' @references
@@ -36,8 +36,6 @@
 #'      \item \href{https://sdmx.org/wp-content/uploads/sdmx_2-1_SECTION_6_TechnicalNotes.pdf}{sdmx Standards, technical notes}
 #'    }
 #'
-#'
-#' @keywords internal
 #'
 #' @export
 #'
@@ -65,18 +63,24 @@
 sdmx_date_to_character <- function(date, frequency) {
   # ======= Parameter checks ===========
 
-  stopifnot(
-    "All elements of 'date' must be a Date." =
-      all(as.Date(date[!is.na(date)]) == date[!is.na(date)]) && inherits(date, what = "Date")
-  )
+  if (!inherits(date, what = "Date")) {
+    cli::cli_abort(c("x" = "All elements of {.field date} must be a Date, it is {.cls class(data)} though!"))
+  }
 
-  unrecognised <- frequency |> setdiff(c("A", "D", "H", "M", "Q"))
-  stopifnot("'frequency' must be any of A, D, H, M, Q" = length(unrecognised) == 0)
+  unrecognised <- frequency |>
+    setdiff(c("A", "D", "H", "M", "Q")) |>
+    unique()
 
-  stopifnot(
-    "Vector size of param 'date' must be 1 or the same as frequency" =
-      length(date) == 1 || length(frequency) == 1 || length(date) == length(frequency)
-  )
+  if (!(length(unrecognised) == 0)) {
+    cli::cli_abort(c(
+      "x" = "{.field frequency} must be be any of A, D, H, M, Q.",
+      "i" = "Check: {.strong unrecognised}!"
+    ))
+  }
+
+  if (!(length(date) == 1 || length(frequency) == 1 || length(date) == length(frequency))) {
+    cli::cli_abort(c("x" = "Vector size of {.field date} (currently {length(date)}) must be 1 or the same as {.field frequency} (currently length(frequency))"))
+  }
 
   # ======= / Parameter checks ===========
 
@@ -117,15 +121,13 @@ sdmx_date_to_character <- function(date, frequency) {
 #'
 #' @note intended for internal use
 #'
-#' @return `scalar<Date>` or `vector<Date>`, depending on the input
+#' @returns `scalar<Date>` or `vector<Date>`, depending on the input
 #'
 #' @references
 #' \itemize{
 #'      \item \href{https://data.ecb.europa.eu/help/api/data}{ECB API Documentation}
 #'      \item \href{https://sdmx.org/wp-content/uploads/sdmx_2-1_SECTION_6_TechnicalNotes.pdf}{sdmx Standards, technical notes}
 #' }
-#'
-#' @keywords internal
 #'
 #' @export
 #'
@@ -146,9 +148,17 @@ sdmx_date_to_character <- function(date, frequency) {
 sdmx_character_to_date <- function(char, day_in_period = "last") {
   if (length(char) == 0) NULL
 
-  stopifnot("All elements of 'char' must be a character" = class(char) == "character" || all(is.na(char)))
-  stopifnot("All elements of 'char' must be at least 4 character long" = all(nchar(char[!is.na(char)]) >= 4))
-  stopifnot("'day_in_period' must be atomic and either 'first' or 'last'" = is.atomic(day_in_period) && day_in_period %in% c("first", "last"))
+  if(inherits(char, what = "Date")) char <- format(char,"%Y-%m-%d")
+
+  if (!(inherits(char, what = "character") || all(is.na(char)))) {
+    cli::cli_abort(c("x" = "All elements of {.field char} must be a character, it is {.cls class(char)} though!"))
+  }
+  if (!(all(nchar(char[!is.na(char)]) >= 4))) {
+    cli::cli_abort(c("x" = "All elements of {.field char} must be be at least 4 character long!"))
+  }
+  if (!(is.atomic(day_in_period) && day_in_period %in% c("first", "last"))) {
+    cli::cli_abort(c("x" = "{.field day_in_period} must be must be atomic and either 'first' or 'last', it is {.strong day_in_period} though!"))
+  }
 
   day_in_period <- rep.int(day_in_period, times = length(char))
 
@@ -180,4 +190,30 @@ sdmx_character_to_date <- function(char, day_in_period = "last") {
     ),
     TRUE ~ NA
   )
+}
+
+
+#' assert_is_df aborts program if object isn't a data.frame-like class
+#'
+#' @param object some object
+#'
+#' @param error_msg *message to show when program aborts*
+#'
+#'   `scalar<character>`  //  *default:* `ECB Data API response is not a valid CSV file. Something must have gone very wrong. Most likely this is not your fault.` (`optional`)
+#'
+#'    in this package this function is only used for ECB Data API response... therefore the standard message
+#'
+#' @returns nothing, but may abort if object is not a data.frame-like class
+#' @keywords internal
+#' @noRd
+#'
+#' @examples
+#' assert_is_df("hfio", "This is not a df")
+assert_is_df <- function(object, error_msg = "ECB Data API response is not a valid CSV file. Something must have gone very wrong. Most likely this is not your fault.") {
+  if (!is.data.frame(object)) {
+    cli::cli_abort(c(
+      "x" = error_msg,
+      "i" = "Object: {.code {object}}"
+    ))
+  }
 }

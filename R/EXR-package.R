@@ -4,6 +4,7 @@
 
 ## usethis namespace: start
 #' @importFrom dplyr tibble
+#' @importFrom dplyr tribble
 #' @importFrom tidyr %>%
 ## usethis namespace: end
 
