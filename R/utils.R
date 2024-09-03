@@ -148,7 +148,7 @@ sdmx_date_to_character <- function(date, frequency) {
 sdmx_character_to_date <- function(char, day_in_period = "last") {
   if (length(char) == 0) NULL
 
-  if(inherits(char, what = "Date")) char <- format(char,"%Y-%m-%d")
+  if (inherits(char, what = "Date")) char <- format(char, "%Y-%m-%d")
 
   if (!(inherits(char, what = "character") || all(is.na(char)))) {
     cli::cli_abort(c("x" = "All elements of {.field char} must be a character, it is {.cls class(char)} though!"))

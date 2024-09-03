@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 options(tibble.print_min = 5, tibble.print_max = 10)
 ```
 
-# EXR // EXchangeRates <img src="man/figures/logo.png" align="right" height="160" />
+# EXR // EXchangeRates <img src="man/figures/logo.png" align="right" height="150" />
 
 <!-- badges: start -->
 
@@ -111,7 +111,8 @@ EXR::get_available_currencies() |>
     subtitle = gt::md(paste0("as of **", Sys.Date(), "**"))
   ) |>
   gt::tab_source_note("Source: https://data.ecb.europa.eu/") |>
-  gt::tab_options(data_row.padding = gt::px(0))
+  gt::tab_options(data_row.padding = gt::px(0)) |>
+  gt::as_raw_html() # workaround for github_document
 ```
 
 ### Discontinued currencies
@@ -137,7 +138,8 @@ dplyr::anti_join(
   ) |>
   gt::tab_source_note("Source: https://data.ecb.europa.eu/")|>
   gt::tab_options(data_row.padding = gt::px(0)) |>
-  gt::cols_align(align = "left", columns = TITLE)
+  gt::cols_align(align = "left", columns = TITLE)|>
+  gt::as_raw_html() # workaround for github_document
 ```
 
 ### Get history for one currency pair
@@ -171,7 +173,8 @@ EXR::get_exchange_rate_history(base_currency = "EUR", price_currency = "USD") |>
   ) |>
   dplyr::filter(!is.na(start)) |>
   ggplot2::ggplot(ggplot2::aes(x = period_end, fill = sign)) +
-  ggplot2::geom_rect(ggplot2::aes(xmin = period_end - 1, xmax = period_end, ymin = end, ymax = start)) +
+  ggplot2::geom_rect(ggplot2::aes(xmin = period_end - 1, xmax = period_end, 
+                                  ymin = end, ymax = start)) +
   ggplot2::scale_fill_manual(values = c("red", "green")) +
   ggplot2::theme_minimal() +
   ggplot2::labs(x = "day", y = "exchange rate", title = "Daily USD/EUR exchange rate", 

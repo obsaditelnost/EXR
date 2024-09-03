@@ -10,7 +10,7 @@ test_that("sdmx_date_to_character works with atomic values", {
   expect_error(EXR::sdmx_date_to_character(date = "2022-01-01", frequency = "M"))
   expect_error(EXR::sdmx_date_to_character(date = 1, frequency = "M"))
   expect_error(EXR::sdmx_date_to_character(date = NULL, frequency = "M"))
-  expect_error(EXR::sdmx_date_to_character(date = c("jfvopeds",2,as.Date("2022-01-01")), frequency = "M"))
+  expect_error(EXR::sdmx_date_to_character(date = c("jfvopeds", 2, as.Date("2022-01-01")), frequency = "M"))
 
   # function works for single values
 
@@ -78,7 +78,7 @@ test_that("sdmx_character_to_date works", {
   expect_error(EXR::sdmx_character_to_date(char = "2023", day_in_period = c("first", "first")))
 
   expect_error(EXR::sdmx_character_to_date(char = "203", day_in_period = c("first", "first")))
-  expect_error(EXR::sdmx_character_to_date(char = c("2023","202"), day_in_period = c("first", "first")))
+  expect_error(EXR::sdmx_character_to_date(char = c("2023", "202"), day_in_period = c("first", "first")))
 
   # day_in_period must be atomic: either first or last
   expect_no_error(EXR::sdmx_character_to_date(char = "2023", day_in_period = "first"))
