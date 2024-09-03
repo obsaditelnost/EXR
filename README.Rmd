@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 options(tibble.print_min = 5, tibble.print_max = 10)
 ```
 
-# EXR // EXchangeRates <img src="man/figures/logo.png" align="right" height="150" />
+# EXR // EXchangeRates <img src="man/figures/logo.png" align="right" height="150"/>
 
 <!-- badges: start -->
 
@@ -34,13 +34,14 @@ MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://cran.r-project.
 
 <!-- badges: end -->
 
-## Overview 
+## Overview
 
 Get currency exchange rates ('EXR') or directly apply currency conversion on a tibble from
-one to another currency based on spot prices (average) provided by 'ECB Data Portal' (European
-Central Bank). If neither the price currency nor base currency is EUR, unofficial
-cross-rates based on EUR will be calculated. The main purpose of this package is to offer
-an unlimited and free way to get (potentially approximate) important exchange rates.
+one to another currency based on spot prices (average) provided by 'ECB Data Portal'
+(European Central Bank). If neither the price currency nor base currency is EUR,
+unofficial cross-rates based on EUR will be calculated. The main purpose of this package
+is to offer an unlimited and free way to get (potentially approximate) important exchange
+rates.
 
 |                                   |                                                      |
 |-----------------------------------|------------------------------------------------------|
@@ -98,7 +99,7 @@ EXR::get_available_currencies()
 
 This can be displayed a bit prettier:
 
-```{r example2}
+```{r example2, eval=FALSE}
 EXR::get_available_currencies() |>
   dplyr::mutate(flag = substr(ISOCODE, 1, 2)) |>
   dplyr::arrange(TITLE) |>
@@ -111,15 +112,16 @@ EXR::get_available_currencies() |>
     subtitle = gt::md(paste0("as of **", Sys.Date(), "**"))
   ) |>
   gt::tab_source_note("Source: https://data.ecb.europa.eu/") |>
-  gt::tab_options(data_row.padding = gt::px(0)) |>
-  gt::as_raw_html() # workaround for github_document
+  gt::tab_options(data_row.padding = gt::px(0))  
 ```
+
+![](./man/figures/README-example2.png){style="display: block;   margin-left: auto;   margin-right: auto;"}
 
 ### Discontinued currencies
 
 Some exchange rates have been published in the past, but are not available any more:
 
-```{r example3}
+```{r example3, eval=FALSE}
 dplyr::anti_join(
   EXR::get_available_currencies(as.Date("2014-01-02")),
   EXR::get_available_currencies(as.Date("2024-01-02")),
@@ -138,9 +140,10 @@ dplyr::anti_join(
   ) |>
   gt::tab_source_note("Source: https://data.ecb.europa.eu/")|>
   gt::tab_options(data_row.padding = gt::px(0)) |>
-  gt::cols_align(align = "left", columns = TITLE)|>
-  gt::as_raw_html() # workaround for github_document
+  gt::cols_align(align = "left", columns = TITLE)
 ```
+
+![](./man/figures/README-example3.png){style="display: block;   margin-left: auto;   margin-right: auto;"}
 
 ### Get history for one currency pair
 
@@ -183,7 +186,8 @@ EXR::get_exchange_rate_history(base_currency = "EUR", price_currency = "USD") |>
 
 #### Request last n elements from a history
 
-Maybe we want to fetch the *last* 10 years of annual data for different currencies *as of a specific period/date*. Let's assume we want data from 2020 up to 10 years into the past:
+Maybe we want to fetch the *last* 10 years of annual data for different currencies *as of
+a specific period/date*. Let's assume we want data from 2020 up to 10 years into the past:
 
 ```{r example6}
 EXR::get_exchange_rate_history(
