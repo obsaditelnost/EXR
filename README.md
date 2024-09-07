@@ -111,8 +111,12 @@ EXR::get_available_currencies() |>
   gt::tab_options(data_row.padding = gt::px(0))  
 ```
 
+<div align="center">
+
 <img src="./man/figures/README-example2.png"
 style="display: block;   margin-left: auto;   margin-right: auto;" />
+
+</div>
 
 ### Discontinued currencies
 
@@ -141,8 +145,12 @@ dplyr::anti_join(
   gt::cols_align(align = "left", columns = TITLE)
 ```
 
+<div align="center">
+
 <img src="./man/figures/README-example3.png"
 style="display: block;   margin-left: auto;   margin-right: auto;" />
+
+</div>
 
 ### Get history for one currency pair
 
@@ -163,16 +171,16 @@ EXR::get_exchange_rate_history(
 #> # A tibble: 10 × 7
 #>    base_currency price_currency period     value periodicity context raw  
 #>    <chr>         <chr>          <date>     <dbl> <chr>       <chr>   <lgl>
-#>  1 EUR           USD            2023-08-31  1.09 D           A       TRUE 
-#>  2 EUR           USD            2023-09-01  1.08 D           A       TRUE 
-#>  3 EUR           USD            2023-09-02  1.08 D           A       FALSE
-#>  4 EUR           USD            2023-09-03  1.08 D           A       FALSE
-#>  5 EUR           USD            2023-09-04  1.08 D           A       TRUE 
-#>  6 EUR           USD            2023-09-05  1.07 D           A       TRUE 
-#>  7 EUR           USD            2023-09-06  1.07 D           A       TRUE 
-#>  8 EUR           USD            2023-09-07  1.07 D           A       TRUE 
-#>  9 EUR           USD            2023-09-08  1.07 D           A       TRUE 
-#> 10 EUR           USD            2023-09-09  1.07 D           A       FALSE
+#>  1 EUR           USD            2023-09-03  1.08 D           A       FALSE
+#>  2 EUR           USD            2023-09-04  1.08 D           A       TRUE 
+#>  3 EUR           USD            2023-09-05  1.07 D           A       TRUE 
+#>  4 EUR           USD            2023-09-06  1.07 D           A       TRUE 
+#>  5 EUR           USD            2023-09-07  1.07 D           A       TRUE 
+#>  6 EUR           USD            2023-09-08  1.07 D           A       TRUE 
+#>  7 EUR           USD            2023-09-09  1.07 D           A       FALSE
+#>  8 EUR           USD            2023-09-10  1.07 D           A       FALSE
+#>  9 EUR           USD            2023-09-11  1.07 D           A       TRUE 
+#> 10 EUR           USD            2023-09-12  1.07 D           A       TRUE
 ```
 
 #### Use history to create plots
@@ -309,7 +317,7 @@ So if we get 0.84 GBP for 1€ and 38 THB for 1€, we should get more than
 Euro. To calculate this we can simply apply:
 
 $$
-\frac{GBP}{THB} = \frac{\frac{THB}{basecurrency}}{\frac{GPB}{basecurrency}}= \frac{\frac{THB}{EUR}}{\frac{GPB}{EUR}} = \frac{38}{0.84} ≈ 45.238
+\frac{GBP}{THB} = \frac{(\frac{THB}{basecurrency})}{(\frac{GPB}{basecurrency})}= \frac{(\frac{THB}{EUR})}{(\frac{GPB}{EUR})} = \frac{38}{0.84} ≈ 45.238
 $$
 
 The API only offers EUR as base currency, so all cross-rates for
