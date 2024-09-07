@@ -86,7 +86,7 @@
 #'   The values are taken from the most recent day before. If data is too old, you
 #'   might not want to use outdated exchange rates though. Set the maximum number of calender
 #'   days you want to go back with `max_lookback_days`. If you don't want to use
-#'   data of previous days, set this parameter to `0`
+#'   data of previous days, set this parameter to `0` or NULL
 #'
 #'   This parameter only has an effect if both `periodicity`=`D` and `fill_missing_dates`=`TRUE`
 #'
@@ -225,28 +225,26 @@ get_exchange_rate_history <- function(base_currency, price_currency, periodicity
 
   if (!(all(grepl("^[A-Z]{3}$", base_currency)) && is.character(base_currency) && length(base_currency) > 0)) {
     cli::cli_abort(c("All elements of 'base_currency' must be an ISO4217 three-letter code.",
-      "x" = "Check {?this/these} code{?s}: {dplyr::coalesce(base_currency,\"NULL\")[!grepl(\"^[A-Z]{3}$\", dplyr::coalesce(base_currency,\"NULL\"))]}"
+      "x" = "Check {?this/these} code{?s}: {dplyr::coalesce(as.character(base_currency),\"NULL\")[!grepl(\"^[A-Z]{3}$\", dplyr::coalesce(as.character(base_currency),\"NULL\"))]}"
     ))
   }
 
   # price_currency
   if (!(all(grepl("^[A-Z]{3}$", price_currency)) && is.character(price_currency) && length(price_currency) > 0)) {
     cli::cli_abort(c("All elements of 'price_currency' must be an ISO4217 three-letter code.",
-      "x" = "Check {?this/these} code{?s}: {dplyr::coalesce(price_currency,\"NULL\")[!grepl(\"^[A-Z]{3}$\", dplyr::coalesce(price_currency,\"NULL\"))]}"
+      "x" = "Check {?this/these} code{?s}: {dplyr::coalesce(as.character(price_currency),\"NULL\")[!grepl(\"^[A-Z]{3}$\", dplyr::coalesce(as.character(price_currency),\"NULL\"))]}"
     ))
   }
 
   # periodicity
-  if (!is.atomic(periodicity) || !(periodicity %in% c("A", "D", "H", "M", "Q"))) {
-    cli::cli_warn(c(
-      "x" = "You tried to set {.field periodicity} to '{periodicity}' but it must be any of {.strong A, D, H, M, Q}",
-      "i" = "{.field periodicity} is set to 'daily' ('{.strong D}')"
+  if (!is.scalar(periodicity) || !all(periodicity %in% c("A", "D", "H", "M", "Q"))) {
+    cli::cli_abort(c(
+      "x" = "You tried to set {.field periodicity} to '{periodicity}' but it must be any of {.strong A, D, H, M, Q}"
     ))
-    periodicity <- "D"
   }
 
   # context
-  if (!is.atomic(context) || !(context %in% c("A", "E"))) {
+  if (!is.scalar(context) || !(context %in% c("A", "E"))) {
     cli::cli_warn(c(
       "x" = "You tried to set {.field context} to '{context}' but it must be any of: {.strong A, E}",
       "i" = "{.field context} is set to 'average' ('{.strong A}')"
@@ -263,48 +261,41 @@ get_exchange_rate_history <- function(base_currency, price_currency, periodicity
   }
 
   # fill_missing_dates
-  if (!is.logical(fill_missing_dates) || length(fill_missing_dates) != 1) {
-    cli::cli_warn(c(
+  if (!is.logical(fill_missing_dates) || !is.scalar(fill_missing_dates) || is.na(fill_missing_dates)) {
+    cli::cli_abort(c(
       "x" = "You tried to set {.field fill_missing_dates} to '{fill_missing_dates}' {.cls {class(fill_missing_dates)}}
-              but it must be any of logical: {.strong TRUE, FALSE}",
-      "i" = "{.field fill_missing_dates} is set to {.strong FALSE}'"
+              but it must be any of logical: {.strong TRUE, FALSE}"
     ))
-    fill_missing_dates <- FALSE
   }
+
+  if (is.null(max_lookback_days)) max_lookback_days <- 0
 
   # max_lookback_days
   # only check if `periodicity`=`D` and `fill_missing_dates`=`TRUE`
   if (periodicity == "D" && fill_missing_dates) {
     if (!is.numeric(max_lookback_days) || length(max_lookback_days) != 1 || max_lookback_days < 0 || round(max_lookback_days) != max_lookback_days) {
-      cli::cli_warn(c(
+      cli::cli_abort(c(
         "x" = "You tried to set {.field max_lookback_days} to '{max_lookback_days}' {.cls {class(max_lookback_days)}}
-              but it must be a numeric integer not smaller than 0",
-        "i" = "{.field max_lookback_days} is set to '{.strong 0}' instead."
+              but it must be a numeric integer not smaller than 0"
       ))
-      max_lookback_days <- 0
     }
   }
 
+  if (periodicity != "D" || !fill_missing_dates) max_lookback_days <- 0
+
   # show_metadata
-  if (!is.logical(show_metadata) || length(show_metadata) != 1) {
-    cli::cli_warn(c(
+  if (!is.logical(show_metadata) || length(show_metadata) != 1 || is.na(show_metadata)) {
+    cli::cli_abort(c(
       "x" = "You tried to set {.field show_metadata} to '{show_metadata}' {.cls {class(show_metadata)}}
-              but it must be any of logical: {.strong TRUE, FALSE}",
-      "i" = "{.field show_metadata} is set to '{.strong TRUE}'"
+              but it must be any of logical: {.strong TRUE, FALSE}"
     ))
-    show_metadata <- TRUE
   }
 
   if (is.null(filter)) filter <- list()
 
   # filter
   if (!is.list(filter)) {
-    cli::cli_warn(c(
-      "x" = "You tried to set {.field filter} to a value of class {.cls {class(filter)}} but only `<list>` is allowed.",
-      "i" = "{.field filter} is set to '{.strong list()}'"
-    ))
-
-    filter <- list()
+    cli::cli_abort(c("x" = "You tried to set {.field filter} to a value of class {.cls {class(filter)}} but only `<list>` is allowed."))
   } else {
     # unknown options
     if (length(names(filter) |> setdiff(c("startPeriod", "endPeriod", "firstNObservations", "lastNObservations"))) > 0) {
@@ -316,63 +307,62 @@ get_exchange_rate_history <- function(base_currency, price_currency, periodicity
     }
 
     # filter$startPeriod
-    if (!is.null(filter$startPeriod) && !(as.Date(filter$startPeriod) == filter$startPeriod)) {
-      cli::cli_warn(c(
-        "!" = "You tried to set {.field filter$startPeriod} to {filter$startPeriod} but only Dates are allowed (try to use as.Date)",
-        "i" = "{.field filter$startPeriod} is set to {.strong NULL}"
-      ))
+    if (!is.null(filter$startPeriod) && (!inherits(filter$startPeriod, what = "Date") || !is.scalar(filter$startPeriod))) {
+      cli::cli_abort(c("!" = "You tried to set {.field filter$startPeriod} to {filter$startPeriod} but only dates are allowed (try to use as.Date)"))
     }
 
     # filter$endPeriod
-    if (!is.null(filter$endPeriod) && !(as.Date(filter$endPeriod) == filter$endPeriod)) {
-      cli::cli_warn(c(
-        "!" = "You tried to set {.field filter$endPeriod} to {filter$endPeriod} but only Dates are allowed (try to use as.Date)",
-        "i" = "{.field filter$endPeriod} is set to {.strong NULL}"
-      ))
+    if (!is.null(filter$endPeriod) && (!inherits(filter$endPeriod, what = "Date") || !is.scalar(filter$endPeriod))) {
+      cli::cli_abort(c("!" = "You tried to set {.field filter$endPeriod} to {filter$endPeriod} but only dates are allowed (try to use as.Date)"))
     }
 
     if (!is.null(filter$startPeriod) && !is.null(filter$endPeriod) && filter$startPeriod > filter$endPeriod) {
       cli::cli_abort(c("!" = "{.field filter$startPeriod} ({filter$startPeriod}) must not be after {.field filter$endPeriod} ({filter$endPeriod})"))
     }
 
+    if (!is.null(filter$startPeriod) && filter$startPeriod > Sys.Date()) {
+      cli::cli_abort(c("!" = "{.field filter$startPeriod} ({filter$startPeriod}) must not be in the future!"))
+    }
+
     # filter$firstNObservations
     if (!is.null(filter$firstNObservations)) {
       if (fill_missing_dates) {
-        cli::cli_warn(c(
-          "!" = "You tried to set {.field filter$firstNObservations} to {filter$firstNObservations} but {.field fill_missing_dates} is TRUE",
-          "i" = "{.field filter$firstNObservations} is set to {.strong NULL} because it can't be used with {.field fill_missing_dates}"
+        cli::cli_abort(c(
+          "x" = "You tried to set {.field filter$firstNObservations} to {filter$firstNObservations} but {.field fill_missing_dates} is TRUE",
+          "i" = "These parameters must not be used together because {.field filter$firstNObservations} invokes an API-sided filtering/limitation but
+          {.field fill_missing_dates} performs a package-sided fill-in of missing dates after the API-request"
         ))
-        filter$firstNObservations <- NULL
-      }
-      if (!is.numeric(filter$firstNObservations) || length(filter$firstNObservations) != 1 ||
-        filter$firstNObservations < 1 || round(filter$firstNObservations) != filter$firstNObservations # nolint.
-      ) {
-        cli::cli_warn(c(
+      } else if (!is.scalar(filter$firstNObservations) || is.na(filter$firstNObservations) || !is.scalar(filter$firstNObservations)) {
+        cli::cli_abort(c(
           "x" = "You tried to set {.field filter$firstNObservations} to '{filter$firstNObservations}' {.cls {class(filter$firstNObservations)}}
-              but it must be a numeric integer not smaller than 1",
-          "i" = "{.field filter$firstNObservations} is set to {.strong NULL} instead."
+              but it must be a numeric integer not smaller than 1"
         ))
-        filter$firstNObservations <- NULL
+      } else if (!is.null(filter$firstNObservations) && (!is.numeric(filter$firstNObservations) || filter$firstNObservations < 1 || ceiling(filter$firstNObservations) != filter$firstNObservations)) {
+        cli::cli_abort(c(
+          "x" = "You tried to set {.field filter$firstNObservations} to '{filter$firstNObservations}' {.cls {class(filter$firstNObservations)}}
+              but it must be a numeric integer not smaller than 1"
+        ))
       }
     }
 
     # filter$lastNObservations
     if (!is.null(filter$lastNObservations)) {
       if (fill_missing_dates) {
-        cli::cli_warn(c(
-          "!" = "You tried to set 'filter$lastNObservations' to {filter$lastNObservations} but {.field fill_missing_dates} is TRUE",
-          "i" = "'filter$lastNObservations' is set to {.strong NULL} because it can't be used with {.field fill_missing_dates}"
+        cli::cli_abort(c(
+          "x" = "You tried to set {.field filter$lastNObservations} to {filter$lastNObservations} but {.field fill_missing_dates} is TRUE",
+          "i" = "These parameters must not be used together because {.field filter$lastNObservations} invokes an API-sided filtering/limitation but
+          {.field fill_missing_dates} performs a package-sided fill-in of missing dates after the API-request"
         ))
-        filter$lastNObservations <- NULL
-      }
-      if (!is.numeric(filter$lastNObservations) || length(filter$lastNObservations) != 1 ||
-        filter$lastNObservations < 1 || round(filter$lastNObservations) != filter$lastNObservations) { # nolint.
-        cli::cli_warn(c(
+      } else if (!is.scalar(filter$lastNObservations) || is.na(filter$lastNObservations) || !is.scalar(filter$lastNObservations)) {
+        cli::cli_abort(c(
           "x" = "You tried to set {.field filter$lastNObservations} to '{filter$lastNObservations}' {.cls {class(filter$lastNObservations)}}
-              but it must be a numeric integer not smaller than 1",
-          "i" = "{.field filter$lastNObservations} is set to {.strong NULL} instead."
+              but it must be a numeric integer not smaller than 1"
         ))
-        filter$lastNObservations <- NULL
+      } else if (!is.null(filter$lastNObservations) && (!is.numeric(filter$lastNObservations) || filter$lastNObservations < 1 || ceiling(filter$lastNObservations) != filter$lastNObservations)) {
+        cli::cli_abort(c(
+          "x" = "You tried to set {.field filter$lastNObservations} to '{filter$lastNObservations}' {.cls {class(filter$lastNObservations)}}
+              but it must be a numeric integer not smaller than 1"
+        ))
       }
     }
 
@@ -381,17 +371,6 @@ get_exchange_rate_history <- function(base_currency, price_currency, periodicity
       cli::cli_abort(c("!" = "You must not use both {.field filter$firstNObservations} and {.field filter$lastNObservations}."))
     }
 
-    if (periodicity == "D" && fill_missing_dates) {
-      if (!is.numeric(max_lookback_days) || length(max_lookback_days) != 1 ||
-        max_lookback_days < 0 || round(max_lookback_days) != max_lookback_days) { # nolint.
-        cli::cli_warn(c(
-          "x" = "You tried to set {.field max_lookback_days} to '{max_lookback_days}' {.cls {class(max_lookback_days)}}
-              but it must be a numeric integer not smaller than 0",
-          "i" = "{.field max_lookback_days} is set to {.strong 0} instead."
-        ))
-        max_lookback_days <- TRUE
-      }
-    }
   }
 
   # ====================================
@@ -436,7 +415,6 @@ get_exchange_rate_history <- function(base_currency, price_currency, periodicity
       paste0("endPeriod=", EXR::sdmx_date_to_character(filter$endPeriod, periodicity))
     )
   )
-
 
   req_string <- paste0(
     req_string,
@@ -585,9 +563,10 @@ get_exchange_rate_history <- function(base_currency, price_currency, periodicity
   if (!show_metadata) return_tibble <- return_tibble |> dplyr::mutate(periodicity = NULL, context = NULL, raw = NULL)
 
   # if daily data, delete rows out of date bounds
-  if (periodicity == "D") {
+  if (periodicity == "D" && nrow(return_tibble) > 0) {
     return_tibble <- return_tibble %>%
-      dplyr::filter(period >= dplyr::coalesce(filter$startPeriod, period) & period <= dplyr::coalesce(filter$endPeriod, period))
+      dplyr::filter(period >= dplyr::coalesce(filter$startPeriod, period) &
+        period <= dplyr::coalesce(filter$endPeriod, period)) # nolint
   }
 
   # finally check for existence of each currency... if one is missing, give a warning
@@ -595,13 +574,18 @@ get_exchange_rate_history <- function(base_currency, price_currency, periodicity
   missing_currencies <- missing_currencies |> union(price_currency |> setdiff(return_tibble$price_currency))
 
   if (length(missing_currencies) > 0) {
-    available_currencies <- paste(EXR::get_available_currencies(date = dplyr::coalesce(filter$endPeriod, Sys.Date() - 1))$ISOCODE, collapse = ", ")
+    available_currencies <- EXR::get_available_currencies(date = dplyr::coalesce(filter$endPeriod, Sys.Date() - 1))$ISOCODE
+    available_currencies_formatted <- paste(available_currencies, collapse = ", ")
 
-    cli::cli_warn(c(
-      "x" = "Currenc{?y/ies} '{.strong {missing_currencies}}' {?is/are} missing the the result.",
-      "i" = "Check {.fn EXR::get_available_currencies}, because only these curriencies are available as of
-            {dplyr::coalesce(filter$endPeriod, Sys.Date() - 1)}: '{.strong {available_currencies}}'"
-    ))
+    if (length(missing_currencies |> setdiff(available_currencies)) == 0 && nrow(return_tibble) == 0) {
+      cli::cli_inform(c("i" = "Result is empty. Please check parameters {.field filter$startPeriod} and {.field filter$endPeriod}"))
+    } else {
+      cli::cli_warn(c(
+        "x" = "Currenc{?y/ies} '{.strong {missing_currencies}}' {?is/are} missing the the result.",
+        "i" = "Check {.fn EXR::get_available_currencies}, because only these curriencies are available as of
+            {dplyr::coalesce(filter$endPeriod, Sys.Date() - 1)}: '{.strong {available_currencies_formatted}}'"
+      ))
+    }
   }
 
   return_tibble

@@ -80,6 +80,12 @@ test_that("sdmx_character_to_date works", {
   expect_error(EXR::sdmx_character_to_date(char = "203", day_in_period = c("first", "first")))
   expect_error(EXR::sdmx_character_to_date(char = c("2023", "202"), day_in_period = c("first", "first")))
 
+  # wrong datatype, but package will take care of it and assume yyyy-mm-dd
+  expect_equal(
+    EXR::sdmx_character_to_date(char = c(as.Date("2024-12-31"), as.Date("2024-08-20"), NA), day_in_period = "first"),
+    EXR::sdmx_character_to_date(char = c("2024-12-31", "2024-08-20", NA), day_in_period = "first")
+  )
+
   # day_in_period must be atomic: either first or last
   expect_no_error(EXR::sdmx_character_to_date(char = "2023", day_in_period = "first"))
   expect_no_error(EXR::sdmx_character_to_date(char = "2023", day_in_period = c("last")))

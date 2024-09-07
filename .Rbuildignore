@@ -2,5 +2,7 @@
 ^\.Rproj\.user$
 ^LICENSE\.md$
 ^\.lintr$
-^\.github$
+^\.gitignore$
+^\.github
 ^README\.Rmd$
+^man/templates

@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
   comment = "#>",
   fig.path = "man/figures/README-",
   out.width = "100%",
-  fig.width = 8, 
+  fig.width = 8,
   fig.height = 4
 )
 options(tibble.print_min = 5, tibble.print_max = 10)
@@ -112,10 +112,12 @@ EXR::get_available_currencies() |>
     subtitle = gt::md(paste0("as of **", Sys.Date(), "**"))
   ) |>
   gt::tab_source_note("Source: https://data.ecb.europa.eu/") |>
-  gt::tab_options(data_row.padding = gt::px(0))  
+  gt::tab_options(data_row.padding = gt::px(0))
 ```
 
+::: {align="center"}
 ![](./man/figures/README-example2.png){style="display: block;   margin-left: auto;   margin-right: auto;"}
+:::
 
 ### Discontinued currencies
 
@@ -138,12 +140,14 @@ dplyr::anti_join(
     title = "Discontinued currencies (temporarily or forever)",
     subtitle = gt::md(paste0("as of **", Sys.Date(), "**"))
   ) |>
-  gt::tab_source_note("Source: https://data.ecb.europa.eu/")|>
+  gt::tab_source_note("Source: https://data.ecb.europa.eu/") |>
   gt::tab_options(data_row.padding = gt::px(0)) |>
   gt::cols_align(align = "left", columns = TITLE)
 ```
 
+::: {align="center"}
 ![](./man/figures/README-example3.png){style="display: block;   margin-left: auto;   margin-right: auto;"}
+:::
 
 ### Get history for one currency pair
 
@@ -176,11 +180,11 @@ EXR::get_exchange_rate_history(base_currency = "EUR", price_currency = "USD") |>
   ) |>
   dplyr::filter(!is.na(start)) |>
   ggplot2::ggplot(ggplot2::aes(x = period_end, fill = sign)) +
-  ggplot2::geom_rect(ggplot2::aes(xmin = period_end - 1, xmax = period_end, 
+  ggplot2::geom_rect(ggplot2::aes(xmin = period_end - 1, xmax = period_end,
                                   ymin = end, ymax = start)) +
   ggplot2::scale_fill_manual(values = c("red", "green")) +
   ggplot2::theme_minimal() +
-  ggplot2::labs(x = "day", y = "exchange rate", title = "Daily USD/EUR exchange rate", 
+  ggplot2::labs(x = "day", y = "exchange rate", title = "Daily USD/EUR exchange rate",
                 subtitle = paste0("For 1 year as of ", Sys.Date() - 1))
 ```
 
@@ -195,7 +199,7 @@ EXR::get_exchange_rate_history(
   price_currency = c("EUR", "THB", "GBP"), periodicity = "A", context = "E", show_metadata = FALSE,
   filter = list(endPeriod = as.Date("2020-12-31"), lastNObservations = 10)
 ) |>
-  tidyr::pivot_wider(names_from = price_currency, values_from = value, 
+  tidyr::pivot_wider(names_from = price_currency, values_from = value,
                      names_glue = "{price_currency}/USD") |>
   dplyr::mutate(base_currency = NULL)
 ```
@@ -275,7 +279,7 @@ because as of "now" one GBP has more value that one Euro. To calculate this we c
 apply:
 
 $$
-\frac{GBP}{THB} = \frac{\frac{THB}{basecurrency}}{\frac{GPB}{basecurrency}}= \frac{\frac{THB}{EUR}}{\frac{GPB}{EUR}} = \frac{38}{0.84} ≈ 45.238
+\frac{GBP}{THB} = \frac{(\frac{THB}{basecurrency})}{(\frac{GPB}{basecurrency})}= \frac{(\frac{THB}{EUR})}{(\frac{GPB}{EUR})} = \frac{38}{0.84} ≈ 45.238
 $$
 
 The API only offers EUR as base currency, so all cross-rates for non-available currency

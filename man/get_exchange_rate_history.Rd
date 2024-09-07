@@ -78,7 +78,7 @@ data on working days. \code{fill_missing_dates}=TRUE fills the missing public ho
 The values are taken from the most recent day before. If data is too old, you
 might not want to use outdated exchange rates though. Set the maximum number of calender
 days you want to go back with \code{max_lookback_days}. If you don't want to use
-data of previous days, set this parameter to \code{0}
+data of previous days, set this parameter to \code{0} or NULL
 
 This parameter only has an effect if both \code{periodicity}=\code{D} and \code{fill_missing_dates}=\code{TRUE}}
 
