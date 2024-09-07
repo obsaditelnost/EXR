@@ -156,7 +156,7 @@ sdmx_character_to_date <- function(char, day_in_period = "last") {
   if (!(all(nchar(char[!is.na(char)]) >= 4))) {
     cli::cli_abort(c("x" = "All elements of {.field char} must be be at least 4 character long!"))
   }
-  if (!(is.atomic(day_in_period) && day_in_period %in% c("first", "last"))) {
+  if (!(is.scalar(day_in_period) && day_in_period %in% c("first", "last"))) {
     cli::cli_abort(c("x" = "{.field day_in_period} must be must be atomic and either 'first' or 'last', it is {.strong day_in_period} though!"))
   }
 
@@ -216,4 +216,27 @@ assert_is_df <- function(object, error_msg = "ECB Data API response is not a val
       "i" = "Object: {.code {object}}"
     ))
   }
+}
+
+#' checks if x is scalar
+#'
+#' @description
+#' NULL, tables, vectors and so on are not scalar
+#'
+#' @param x *object/value*
+#'
+#'   `?<?>` // **required**
+#'
+#' @returns `<logical>` TRUE or FALSE
+#'
+#' @noRd
+#' @keywords internal
+#' @examples
+#' # check an actual scalar value
+#' is.scalar(2)
+#'
+#' # check an non-scalar value
+#' is.scalar(c(2, 3))
+is.scalar <- function(x) { #nolint
+  is.atomic(x) && length(x) == 1L
 }
