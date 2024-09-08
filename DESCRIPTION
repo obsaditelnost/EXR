@@ -42,5 +42,6 @@ Suggests:
     ISOcodes,
     withr,
     gt,
-    badger
+    badger,
+    rmarkdown
 Config/testthat/edition: 3
