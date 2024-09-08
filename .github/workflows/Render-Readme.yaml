@@ -1,11 +1,10 @@
-# force render readme
-name: render-readme
-
 on:
   push:
     branches: [main, master]
   pull_request:
     branches: [main, master]
+
+name: render-readme
 
 permissions: read-all
 
