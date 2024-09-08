@@ -25,15 +25,16 @@ jobs:
 
       # install packages
       - uses: r-lib/actions/setup-r-dependencies@v2
-          cache: always
-          extra-packages: local::., rmarkdown
-          needs: check
+          with:
+            cache: always
+            extra-packages: local::., rmarkdown
+            needs: check
 
       # Render README.md using rmarkdown
-      - name: render README
+      - name: render-README-with-rmarkdown
         run: Rscript -e 'rmarkdown::render("README.Rmd", output_format = "md_document")'
 
-      - name: commit rendered README
+      - name: commit-rendered-README
         run: |
           git add README.md man/figures/README-*
           git commit -m "Re-build README.md" || echo "No changes to commit"
