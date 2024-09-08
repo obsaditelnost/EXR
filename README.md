@@ -10,7 +10,7 @@ has not yet been a stable, usable release suitable for the
 public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
 [![License:
 MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://cran.r-project.org/web/licenses/MIT)
-[![](https://img.shields.io/badge/devel%20version-0.1.0.9002-blue.svg)](https://github.com/obsaditelnost/EXR)
+[![](https://img.shields.io/badge/devel%20version-0.1.0.9004-blue.svg)](https://github.com/obsaditelnost/EXR)
 [![](https://codecov.io/gh/obsaditelnost/EXR/branch/main/graph/badge.svg)](https://app.codecov.io/gh/obsaditelnost/EXR)
 [![R build
 status](https://github.com/obsaditelnost/EXR/workflows/R-CMD-check/badge.svg)](https://github.com/obsaditelnost/EXR/actions)
