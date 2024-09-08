@@ -47,8 +47,10 @@ test_that("get_all_cross_rates parameter 'date' works", {
     )
   }
 
-  expect_error(EXR::get_all_cross_rates(
-    currencies = c("EUR", "USD"), date = c(Sys.Date() - 10, Sys.Date() - 20)),
+  expect_error(
+    EXR::get_all_cross_rates(
+      currencies = c("EUR", "USD"), date = c(Sys.Date() - 10, Sys.Date() - 20)
+    ),
     regexp = ".*must be scalar, not a vector.*"
   )
 
