@@ -1,7 +1,7 @@
 Package: EXR
 Type: Package
 Title: Download Free Currency Data / Exchange Rates and Apply Currency Conversions
-Version: 0.1.0.9003
+Version: 0.1.0.9004
 Authors@R: 
   c(person(given = "Mirko",
            family = "Schinck",
