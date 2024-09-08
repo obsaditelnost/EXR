@@ -39,11 +39,42 @@ data of previous days, set this parameter to \code{0} or NULL}
 
 \item{output_method}{\emph{how do you want the output to be formatted}
 
-\verb{scalar<character>} //  \emph{default:} \code{long} (\code{optional})
+\verb{scalar<character>} //  \emph{default:} \code{"long"} (\code{optional}). Allowed values are:
 
 \itemize{
 \item \strong{long}/\strong{deep}: output will be a deep table with columns base_currency, price_currency, value
-\item \strong{wide}/\strong{pivot}: output will be a wide (pivot) table with base_currency as rows and price_currency as columns, value as combination
+\item \strong{wide}/\strong{pivot}: output will be a wide (pivot) table with base_currency as row names and price_currency as column names. So you'll be able
+to access a specific exchange rate by \code{result['base_currency', 'price_currency']}, for example
+\code{result['GBP', 'USD']} which translates to: for a GBP, how many USD will I get?
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{ ----------------  long: -------------------
+
+ |base_currency|price_currency|value       |
+ |-------------|--------------|------------|
+ |CNY          |CNY           |1.000000e+00|
+ |CNY          |EUR           |1.273739e-01|
+ |CNY          |GBP           |1.106943e-01|
+ |CNY          |JPY           |1.991237e+01|
+ |CNY          |USD           |1.407482e-01|
+ |EUR          |CNY           |7.850900e+00|
+ |EUR          |EUR           |1.000000e+00|
+ |EUR          |GBP           |8.690500e-01|
+ |EUR          |JPY           |1.563300e+02|
+ |EUR          |USD           |1.105000e+00|
+ |GBP          |CNY           |9.033888e+00|
+ |GBP          |EUR           |1.150682e+00|
+
+ --------------------------  wide: ---------------------------
+
+    |CNY       |EUR        |GBP        |JPY      |USD        |
+ ---|----------|-----------|-----------|---------|-----------|
+ CNY|1.00000000|0.127373932|0.110694315| 19.91237|0.140748194|
+ EUR|7.85090000|1.000000000|0.869050000|156.33000|1.105000000|
+ GBP|9.03388758|1.150681779|1.000000000|179.88608|1.271503366|
+ JPY|0.05022005|0.006396725|0.005559074|  1.00000|0.007068381|
+ USD|7.10488688|0.904977376|0.786470588|141.47511|1.000000000|
+}\if{html}{\out{</div>}}
+
 }}
 }
 \description{
@@ -56,6 +87,8 @@ will be calculated based on EUR-based currency pairs
 EXR::get_all_cross_rates()
 
 # get all combinations for a set of currencies as of end 2023 and show as pivot table
-EXR::get_all_cross_rates(currencies = c("EUR", "USD", "JPY", "GBP", "CNY"), date = as.Date("2023-12-31"), output_method = "pivot")
+EXR::get_all_cross_rates(
+    currencies = c("EUR", "USD", "JPY", "GBP", "CNY"),
+    date = as.Date("2023-12-31"), output_method = "pivot")
 
 }

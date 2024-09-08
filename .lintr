@@ -1,5 +1,6 @@
 linters: linters_with_defaults(
     line_length_linter(200),
+    cyclocomp_linter(complexity_limit = 30L),
     # weird behaviour wrt tidy eval, doesn't look at utils::globalVariables
     object_usage_linter = NULL
   )

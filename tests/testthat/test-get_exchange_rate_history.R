@@ -349,7 +349,7 @@ test_that("get_exchange_rate_history param filter works as expected", {
         endPeriod = as.Date("2022-12-31")
       )
     ),
-    regexp = ".*Result is empty. Please check parameters.*"
+    regexp = ".*Result is empty. Please check your date configuration.*"
   )
 
 

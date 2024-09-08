@@ -1,7 +1,7 @@
 Package: EXR
 Type: Package
 Title: Download Free Currency Data / Exchange Rates and Apply Currency Conversions
-Version: 0.1.0.9001
+Version: 0.1.0.9002
 Authors@R: 
   c(person(given = "Mirko",
            family = "Schinck",
@@ -21,7 +21,6 @@ BugReports: https://github.com/obsaditelnost/EXR/issues
 License: MIT + file LICENSE
 Encoding: UTF-8
 Language: en-GB
-LazyData: true
 RoxygenNote: 7.3.2
 Roxygen: list(markdown = TRUE)
 Depends:
@@ -33,7 +32,8 @@ Imports:
     cli (>= 3.4.1),
     zoo (>= 1.7-13),
     dplyr (>= 1.1.1),
-    vctrs (>= 0.4.0)
+    vctrs (>= 0.4.0),
+    tibble
 Suggests: 
     testthat (>= 3.0.0),
     lintr,
@@ -41,5 +41,6 @@ Suggests:
     ecb,
     ISOcodes,
     withr,
-    gt
+    gt,
+    badger
 Config/testthat/edition: 3

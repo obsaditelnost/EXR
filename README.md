@@ -8,11 +8,13 @@
 [![Project Status: WIP - Initial development is in progress, but there
 has not yet been a stable, usable release suitable for the
 public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
-[![R-CMD-check](https://github.com/obsaditelnost/EXR/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/obsaditelnost/EXR/actions/workflows/R-CMD-check.yaml)
-[![Codecov test
-coverage](https://codecov.io/gh/obsaditelnost/EXR/graph/badge.svg)](https://app.codecov.io/gh/obsaditelnost/EXR)
 [![License:
 MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://cran.r-project.org/web/licenses/MIT)
+[![](https://img.shields.io/badge/devel%20version-0.1.0.9002-blue.svg)](https://github.com/obsaditelnost/EXR)
+[![](https://codecov.io/gh/obsaditelnost/EXR/branch/main/graph/badge.svg)](https://app.codecov.io/gh/obsaditelnost/EXR)
+[![R build
+status](https://github.com/obsaditelnost/EXR/workflows/R-CMD-check/badge.svg)](https://github.com/obsaditelnost/EXR/actions)
+[![](https://www.r-pkg.org/badges/version/EXR?color=orange)](https://cran.r-project.org/package=EXR)
 
 <!-- badges: end -->
 
@@ -20,11 +22,11 @@ MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://cran.r-project.
 
 Get currency exchange rates (‘EXR’) or directly apply currency
 conversion on a tibble from one to another currency based on spot prices
-(average) provided by ‘ECB Data Portal’ (European Central Bank). If
-neither the price currency nor base currency is EUR, unofficial
-cross-rates based on EUR will be calculated. The main purpose of this
-package is to offer an unlimited and free way to get (potentially
-approximate) important exchange rates.
+provided by ‘ECB Data Portal’ (European Central Bank). If neither the
+price currency nor base currency is EUR, unofficial cross-rates based on
+EUR will be calculated. The main purpose of this package is to offer an
+unlimited and free way to get (potentially approximate) important
+exchange rates.
 
 |                                   |                                                      |
 |-----------------------------------|------------------------------------------------------|
@@ -108,7 +110,7 @@ EXR::get_available_currencies() |>
     subtitle = gt::md(paste0("as of **", Sys.Date(), "**"))
   ) |>
   gt::tab_source_note("Source: https://data.ecb.europa.eu/") |>
-  gt::tab_options(data_row.padding = gt::px(0))  
+  gt::tab_options(data_row.padding = gt::px(0))
 ```
 
 <div align="center">
@@ -140,7 +142,7 @@ dplyr::anti_join(
     title = "Discontinued currencies (temporarily or forever)",
     subtitle = gt::md(paste0("as of **", Sys.Date(), "**"))
   ) |>
-  gt::tab_source_note("Source: https://data.ecb.europa.eu/")|>
+  gt::tab_source_note("Source: https://data.ecb.europa.eu/") |>
   gt::tab_options(data_row.padding = gt::px(0)) |>
   gt::cols_align(align = "left", columns = TITLE)
 ```
@@ -171,16 +173,16 @@ EXR::get_exchange_rate_history(
 #> # A tibble: 10 × 7
 #>    base_currency price_currency period     value periodicity context raw  
 #>    <chr>         <chr>          <date>     <dbl> <chr>       <chr>   <lgl>
-#>  1 EUR           USD            2023-09-03  1.08 D           A       FALSE
-#>  2 EUR           USD            2023-09-04  1.08 D           A       TRUE 
-#>  3 EUR           USD            2023-09-05  1.07 D           A       TRUE 
-#>  4 EUR           USD            2023-09-06  1.07 D           A       TRUE 
-#>  5 EUR           USD            2023-09-07  1.07 D           A       TRUE 
-#>  6 EUR           USD            2023-09-08  1.07 D           A       TRUE 
-#>  7 EUR           USD            2023-09-09  1.07 D           A       FALSE
-#>  8 EUR           USD            2023-09-10  1.07 D           A       FALSE
-#>  9 EUR           USD            2023-09-11  1.07 D           A       TRUE 
-#> 10 EUR           USD            2023-09-12  1.07 D           A       TRUE
+#>  1 EUR           USD            2023-09-04  1.08 D           A       TRUE 
+#>  2 EUR           USD            2023-09-05  1.07 D           A       TRUE 
+#>  3 EUR           USD            2023-09-06  1.07 D           A       TRUE 
+#>  4 EUR           USD            2023-09-07  1.07 D           A       TRUE 
+#>  5 EUR           USD            2023-09-08  1.07 D           A       TRUE 
+#>  6 EUR           USD            2023-09-09  1.07 D           A       FALSE
+#>  7 EUR           USD            2023-09-10  1.07 D           A       FALSE
+#>  8 EUR           USD            2023-09-11  1.07 D           A       TRUE 
+#>  9 EUR           USD            2023-09-12  1.07 D           A       TRUE 
+#> 10 EUR           USD            2023-09-13  1.07 D           A       TRUE
 ```
 
 #### Use history to create plots
@@ -197,11 +199,11 @@ EXR::get_exchange_rate_history(base_currency = "EUR", price_currency = "USD") |>
   ) |>
   dplyr::filter(!is.na(start)) |>
   ggplot2::ggplot(ggplot2::aes(x = period_end, fill = sign)) +
-  ggplot2::geom_rect(ggplot2::aes(xmin = period_end - 1, xmax = period_end, 
+  ggplot2::geom_rect(ggplot2::aes(xmin = period_end - 1, xmax = period_end,
                                   ymin = end, ymax = start)) +
   ggplot2::scale_fill_manual(values = c("red", "green")) +
   ggplot2::theme_minimal() +
-  ggplot2::labs(x = "day", y = "exchange rate", title = "Daily USD/EUR exchange rate", 
+  ggplot2::labs(x = "day", y = "exchange rate", title = "Daily USD/EUR exchange rate",
                 subtitle = paste0("For 1 year as of ", Sys.Date() - 1))
 ```
 
@@ -219,7 +221,7 @@ EXR::get_exchange_rate_history(
   price_currency = c("EUR", "THB", "GBP"), periodicity = "A", context = "E", show_metadata = FALSE,
   filter = list(endPeriod = as.Date("2020-12-31"), lastNObservations = 10)
 ) |>
-  tidyr::pivot_wider(names_from = price_currency, values_from = value, 
+  tidyr::pivot_wider(names_from = price_currency, values_from = value,
                      names_glue = "{price_currency}/USD") |>
   dplyr::mutate(base_currency = NULL)
 #> # A tibble: 10 × 4
@@ -235,6 +237,36 @@ EXR::get_exchange_rate_history(
 #>  8   2018     0.873      32.4     0.781
 #>  9   2019     0.890      29.7     0.757
 #> 10   2020     0.815      29.9     0.733
+```
+
+### Get exchange rate matrix for currency combinations
+
+get all combinations for a set of currencies as of end 2023 and show as
+pivot table:
+
+``` r
+xrates <- EXR::get_all_cross_rates(
+  currencies = c("EUR", "USD", "JPY", "GBP", "CNY"),
+  date = as.Date("2023-12-31"), output_method = "pivot"
+)
+
+xrates
+#>            CNY         EUR         GBP       JPY         USD
+#> CNY 1.00000000 0.127373932 0.110694315  19.91237 0.140748194
+#> EUR 7.85090000 1.000000000 0.869050000 156.33000 1.105000000
+#> GBP 9.03388758 1.150681779 1.000000000 179.88608 1.271503366
+#> JPY 0.05022005 0.006396725 0.005559074   1.00000 0.007068381
+#> USD 7.10488688 0.904977376 0.786470588 141.47511 1.000000000
+```
+
+Access a specific exchange rate by
+`xrates['base_currency', 'price_currency']`, for example
+`xrates['GBP', 'USD']` which translates to: for a GBP, how many USD will
+I get?
+
+``` r
+xrates["GBP", "USD"]
+#> [1] 1.271503
 ```
 
 ## Further information
@@ -326,3 +358,12 @@ look back at [bid, ask, mid, intraday
 rates](#bid-ask-mid-intraday-rates) we may see that this approach is
 quite simple and prone to inaccuracy because we don’t take bid and ask
 prices into account for such a calculation.
+
+------------------------------------------------------------------------
+
+<div align="center">
+
+[![Buy Me A
+Coffee](https://www.buymeacoffee.com/assets/img/custom_images/white_img.png)](https://www.buymeacoffee.com/obsaditelnost)
+
+</div>

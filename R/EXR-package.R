@@ -12,5 +12,6 @@
 utils::globalVariables(c(
   "CURRENCY", "CURRENCY_DENOM", "EXR_SUFFIX", "FREQ", "KEY", "OBS_VALUE",
   "OBS_VALUE.denominator", "OBS_VALUE.numerator", "TIME_PERIOD", "period",
-  "required_base_currency", "required_price_currency", "value", "."
+  "required_base_currency", "required_price_currency", "base_currency", "price_currency",
+  "value", "."
 ))

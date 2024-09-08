@@ -370,7 +370,6 @@ get_exchange_rate_history <- function(base_currency, price_currency, periodicity
     if (!(is.null(filter$firstNObservations) || is.null(filter$lastNObservations))) {
       cli::cli_abort(c("!" = "You must not use both {.field filter$firstNObservations} and {.field filter$lastNObservations}."))
     }
-
   }
 
   # ====================================
@@ -578,7 +577,8 @@ get_exchange_rate_history <- function(base_currency, price_currency, periodicity
     available_currencies_formatted <- paste(available_currencies, collapse = ", ")
 
     if (length(missing_currencies |> setdiff(available_currencies)) == 0 && nrow(return_tibble) == 0) {
-      cli::cli_inform(c("i" = "Result is empty. Please check parameters {.field filter$startPeriod} and {.field filter$endPeriod}"))
+      cli::cli_inform(c("i" = "Result is empty. Please check your date configuration. You may want to use a higher value for {.field max_lookback_days}.
+                               Now it is '{max_lookback_days}'"))
     } else {
       cli::cli_warn(c(
         "x" = "Currenc{?y/ies} '{.strong {missing_currencies}}' {?is/are} missing the the result.",
