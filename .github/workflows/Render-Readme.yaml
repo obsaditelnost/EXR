@@ -10,7 +10,7 @@ permissions: read-all
 
 jobs:
   render-rmarkdown:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     permissions:
@@ -25,6 +25,9 @@ jobs:
 
       # install packages
       - uses: r-lib/actions/setup-r-dependencies@v2
+          cache: always
+          extra-packages: local::., rmarkdown
+          needs: check
 
       # Render README.md using rmarkdown
       - name: render README
